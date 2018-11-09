@@ -21,5 +21,11 @@ function data=appendData(data,data1)
 
 fnames=fieldnames(data);
 for f=1:numel(fnames)
-  eval(['data.',fnames{f},'=[data.',fnames{f},'; data1.',fnames{f},'];']);
+  if eval(['size(data.',fnames{f},',2)<size(data1.',fnames{f},',2)'])
+    eval(['data.',fnames{f},'=[data.',fnames{f},' cell(size(data.',fnames{f},',1),size(data1.',fnames{f},',2)-size(data.',fnames{f},',2)); data1.',fnames{f},'];']);
+  elseif eval(['size(data.',fnames{f},',2)>size(data1.',fnames{f},',2)'])
+    eval(['data.',fnames{f},'=[data.',fnames{f},'; data1.',fnames{f},' cell(size(data1.',fnames{f},',1),size(data.',fnames{f},',2)-size(data1.',fnames{f},',2))];']);
+  else
+    eval(['data.',fnames{f},'=[data.',fnames{f},'; data1.',fnames{f},'];']);
+  end
 end
