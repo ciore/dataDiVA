@@ -20,13 +20,13 @@
 %% main
 
 clear
-LoPfile='LoP';
+LoPfile='ListofPubs';
 outfile='pubsDatabase';
 
 %% inputs
 searchQuery={...
   'Ciaran+J+O%27Reilly';...
-  'Peter+Göransson';...
+  '0000-0003-0176-5358';...
   };
 
 %% assemble data
