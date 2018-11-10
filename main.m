@@ -50,9 +50,8 @@ data=subsetData(data,setdiff(1:length(data.title),find(not(cellfun('isempty',str
 % data=addExtraDiVA(data);
 
 %% write out LoP in KTH format
-data=formatData(data);
 fprintf(['writing ',LoPfile,'.htm\n'])
-writeListOfPubsKTHweb(data,[LoPfile,'.htm'])
+writeListOfPubsKTHweb(formatData(data),[LoPfile,'.htm'])
 
 %% save
 fprintf(['saving ',outfile,'.htm\n'])
