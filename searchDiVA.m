@@ -36,7 +36,7 @@ for s=1:length(searchQuery)
   %----------------------
   %search
   fullURL=['http://kth.diva-portal.org/smash/resultList.jsf?query=',searchQuery{s},'&searchType=',searchType,'&noOfRows=',noOfRows];
-  pageStr=urlread(fullURL);
+  pageStr=webread(fullURL);
   
   %----------------------
   %find number of entries
