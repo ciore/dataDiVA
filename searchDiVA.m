@@ -86,60 +86,65 @@ for s=1:length(searchQuery)
     else
       i(2)=min(strfind(str(i:length(str)),'</span>'))-2+i;
       instr=str(i(1)+min(find(double(str(i(1):i(end)))~=32))-1:i(end));
+      i=find(double(instr)==32);
+      instr=instr(setdiff(1:end,i(find(i(2:end)-i(1:end-1)==1))));
+      if ~strcmp(instr(end-1:end),', ')
+        instr=[instr,', '];
+      end
       %e-issn
       i=min(strfind(instr,'E-ISSN '))+7;
       if ~isempty(i)
         i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
         eissn=instr(i(1):i(2));
-        instr=instr(setdiff(1:length(instr),i(1)-8:i(2)+1));
+        instr=instr(setdiff(1:length(instr),i(1)-7:i(2)+2));
       end
       %e issn
       i=min(strfind(instr,'E ISSN '))+7;
       if ~isempty(i)
         i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
         eissn=instr(i(1):i(2));
-        instr=instr(setdiff(1:length(instr),i(1)-8:i(2)+1));
+        instr=instr(setdiff(1:length(instr),i(1)-7:i(2)+2));
       end
       %issn
       i=min(strfind(instr,'ISSN '))+5;
       if ~isempty(i)
         i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
         issn=instr(i(1):i(2));
-        instr=instr(setdiff(1:length(instr),i(1)-6:i(2)+1));
+        instr=instr(setdiff(1:length(instr),i(1)-5:i(2)+2));
       end
       %issn duplicate
       i=min(strfind(instr,'ISSN '))+5;
       if ~isempty(i)
         i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
         issn=instr(i(1):i(2));
-        instr=instr(setdiff(1:length(instr),i(1)-6:i(2)+1));
+        instr=instr(setdiff(1:length(instr),i(1)-5:i(2)+2));
       end
       %volume
       i=strfind(instr,'Vol.')+5;
       if isempty(i)
         volume(n,1)={[]};
       else
-        i(2)=min([min(strfind(instr(i:end),','))-2+i length(instr)]);
+        i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
         volume(n,1)={instr(i(1):i(2))};
-        instr=instr(setdiff(1:length(instr),i(1)-6:i(2)+1));
+        instr=instr(setdiff(1:length(instr),i(1)-5:i(2)+2));
       end
       %number
       i=strfind(instr,' no ')+4;
       if isempty(i)
         number(n,1)={[]};
       else
-        i(2)=min([min(strfind(instr(i:end),','))-2+i length(instr)]);
+        i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
         number(n,1)={instr(i(1):i(2))};
-        instr=instr(setdiff(1:length(instr),i(1)-4:i(2)+1));
+        instr=instr(setdiff(1:length(instr),i(1)-3:i(2)+2));
       end
       %pages
-      i=strfind(instr,' p.')-1;
+      i=strfind(instr,' p. ')+4;
       if isempty(i)
         pages(n,1)={[]};
       else
-        i(2)=max([1 max(strfind(instr(1:i),' '))+1]);
-        pages(n,1)={instr(i(2):i(1))};
-        instr=instr(setdiff(1:length(instr),i(2)-1:i(1)+3));
+        i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
+        pages(n,1)={instr(i(1):i(2))};
+        instr=instr(setdiff(1:length(instr),i(1)-3:i(2)+2));
       end
       %in
       if isempty(instr)
