@@ -218,7 +218,7 @@ for s=1:length(searchQuery)
     
     %----------------------
     %collect DOI info
-    i=strfind(str,'http://dx.doi.org/')+18;
+    i=strfind(str,'doi.org/')+8;
     if isempty(i)
       doi(n,1)={[]};
     else
