@@ -17,134 +17,72 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function pubs=addExtraDiVA(pubs)
+function data=addExtraDiVA(data)
 
-conference=cell(length(pubs.pid),1);
-in=cell(length(pubs.pid),1);
-volume=cell(length(pubs.pid),1);
-number=cell(length(pubs.pid),1);
-pages=cell(length(pubs.pid),1);
-isi=cell(length(pubs.pid),1);
-scopus=cell(length(pubs.pid),1);
-for n=1:length(pubs.pid)
+isi=cell(length(data.pid),1);
+eid=cell(length(data.pid),1);
+keywords=cell(length(data.pid),1);
+conference=cell(length(data.pid),1);
+for n=1:numel(data.pid)
   
-  %----------------------
-  %search record for more info
-  fullURL=['http://kth.diva-portal.org/smash/record.jsf?dswid=2747&pid=',pubs.pid{n,1}];
-  str=urlread(fullURL);
+  %% search record for more info
+  fullURL=['http://kth.diva-portal.org/smash/record.jsf?dswid=2747&pid=',data.pid{n,1}];
+  pageStr=webread(fullURL);
   
-  %read conference
-  i=min(strfind(str,'conference_title" content="'))+27;
-  if isempty(i)
-    conference(n,1)={[]};
-  else
-    i(2)=min(strfind(str(i:length(str)),'">'))-2+i;
-    conference(n,1)={str(i(1):i(2))};
-  end
-  
-  %add info
-  i=min(strfind(str,'Place, publisher, year, edition, pages</h5>'))+43;
-  if ~isempty(i)
-    i(2)=min(strfind(str(i:length(str)),'<'))-2+i;
-    instr=str(i(1):i(2));
-    %year
-    i=max([1 min(strfind(instr,pubs.year{n}))-2]);
-    i(2)=min([length(instr) i+5]);
-    instr=instr(setdiff(1:length(instr),i(1):i(2)));
-    %e-issn
-    i=min(strfind(instr,'E-ISSN '))+7;
-    if ~isempty(i)
-      i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
-      eissn=instr(i(1):i(2));
-      instr=instr(setdiff(1:length(instr),i(1)-8:i(2)+1));
-    end
-    %e issn
-    i=min(strfind(instr,'E ISSN '))+7;
-    if ~isempty(i)
-      i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
-      eissn=instr(i(1):i(2));
-      instr=instr(setdiff(1:length(instr),i(1)-8:i(2)+1));
-    end
-    %issn
-    i=min(strfind(instr,'ISSN '))+5;
-    if ~isempty(i)
-      i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
-      issn=instr(i(1):i(2));
-      instr=instr(setdiff(1:length(instr),i(1)-6:i(2)+1));
-    end
-    %issn duplicate
-    i=min(strfind(instr,'ISSN '))+5;
-    if ~isempty(i)
-      i(2)=min([length(instr) min(strfind(instr(i:length(instr)),', '))-2+i]);
-      issn=instr(i(1):i(2));
-      instr=instr(setdiff(1:length(instr),i(1)-6:i(2)+1));
-    end
-    %volume
-    i=strfind(instr,'Vol.')+5;
-    if isempty(i)
-      volume(n,1)={[]};
-    else
-      i(2)=min([min(strfind(instr(i:end),','))-2+i length(instr)]);
-      volume(n,1)={instr(i(1):i(2))};
-      instr=instr(setdiff(1:length(instr),i(1)-6:i(2)+1));
-    end
-    %number
-    i=strfind(instr,' no ')+4;
-    if isempty(i)
-      number(n,1)={[]};
-    else
-      i(2)=min([min(strfind(instr(i:end),','))-2+i length(instr)]);
-      number(n,1)={instr(i(1):i(2))};
-      instr=instr(setdiff(1:length(instr),i(1)-4:i(2)+1));
-    end
-    %pages
-    i=strfind(instr,' p.')-1;
-    if isempty(i)
-      pages(n,1)={[]};
-    else
-      i(2)=max([1 max(strfind(instr(1:i),' '))+1]);
-      pages(n,1)={instr(i(2):i(1))};
-      instr=instr(setdiff(1:length(instr),i(2)-1:i(1)+3));
-    end
-    %in
-    i=strfind(instr,'.')-1;
-    instr=instr(1:i);
-    if isempty(instr)
-      instr=[];
-    else
-      if double(instr(end))==32
-        instr=instr(1:end-1);
-      end
-      i=strfind(instr,':');
-      if ~isempty(i)
-        instr=[instr(i+2:end),', ',instr(1:i-1)];
-      end
-    end
-    in(n,1)={instr};
-  end
-  
-  %read ISI
-  i=min(strfind(str,'ISI: '))+5;
+  %% read Web of Science ISI
+  i=min(strfind(pageStr,'ISI: '))+5;
   if isempty(i)
     isi(n,1)={[]};
   else
-    i=min(strfind(str(i:length(str)),'UT='))+2+i;
-    i(2)=min(strfind(str(i:length(str)),'" '))-2+i;
-    isi(n,1)={str(i(1):i(end))};
+    i=min(strfind(pageStr(i:length(pageStr)),'UT='))+2+i;
+    i(2)=min(strfind(pageStr(i:length(pageStr)),'" '))-2+i;
+    isi(n,1)={pageStr(i(1):i(end))};
   end
   
-  %read scopus
-  i=min(strfind(str,'ScopusID: '))+10;
+  %% read Scopus EID
+  i=min(strfind(pageStr,'Scopus ID: '))+11;
   if isempty(i)
-    scopus(n,1)={[]};
+    eid(n,1)={[]};
   else
-    i=min(strfind(str(i:length(str)),'eid='))+3+i;
-    i(2)=min(strfind(str(i:length(str)),'" '))-2+i;
-    scopus(n,1)={str(i(1):i(end))};
+    i=min(strfind(pageStr(i:length(pageStr)),'eid='))+3+i;
+    i(2)=min(strfind(pageStr(i:length(pageStr)),'" '))-2+i;
+    eid(n,1)={pageStr(i(1):i(end))};
   end
   
+  %% read keywords
+  i=min(strfind(pageStr,'Keywords '));
+  if isempty(i)
+    conference(n,1)={[]};
+  else
+    i=min(strfind(pageStr(i:end),'</h5>'))+4+i;
+    i(2)=min(strfind(pageStr(i:length(pageStr)),'<span'))-2+i;
+    keywords(n,1)={pageStr(i(1):i(2))};
+  end
+  
+  %% read visits
+  i=min(strfind(pageStr,'Visits for this pub'));
+  if isempty(i)
+    visits(n,1)={[]};
+  else
+    i=min(strfind(pageStr(i:end),'Total: '))+6+i;
+    i(2)=min(strfind(pageStr(i:length(pageStr)),' '))-2+i;
+    visits(n,1)={pageStr(i(1):i(2))};
+  end
+  
+  
+  %% read conference
+  i=min(strfind(pageStr,'conference_title" content="'))+27;
+  if isempty(i)
+    conference(n,1)={[]};
+  else
+    i(2)=min(strfind(pageStr(i:length(pageStr)),'">'))-2+i;
+    conference(n,1)={pageStr(i(1):i(2))};
+  end
+
 end
-pubs.in(not(cellfun('isempty',conference)))=conference(not(cellfun('isempty',conference)));
-pubs.in(cellfun('isempty',pubs.in))=in(cellfun('isempty',pubs.in));
-pubs.isi=isi;
-pubs.scopus=scopus;
+data.isi=isi;
+data.eid=eid;
+data.keywords=keywords;
+data.visits=visits;
+data.conference=conference;
+
