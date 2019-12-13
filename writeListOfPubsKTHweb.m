@@ -59,7 +59,7 @@ for i=1:length(dataType.title)
   fprintf(fid, '%-s\n',['<span style=''color:#009fdb''>&quot;',dataType.title{i},',&quot;']);
   fprintf(fid, '%-s\n',['</span>']);
   fprintf(fid, '%-s\n',['</a>']);
-  fprintf(fid, '%-s\n',['<i> ',dataType.in{i},', </i> ',dataType.info{i},dataType.year{i},'.']);
+  fprintf(fid, '%-s\n',['<i> ',dataType.in{i},'.']);%', </i> ',dataType.info{i},dataType.year{i},
   fprintf(fid, '%-s\n',['</p>']);
   fprintf(fid, '%-s\n',['']);
   count=count+1;
